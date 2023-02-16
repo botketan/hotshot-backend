@@ -5,7 +5,7 @@ const {
   verifyToken,
   authenticateOwner,
   authorizeOwner,
-} = require('../middlewares/verifyToken');
+} = require('../Middlewares/verifyToken');
 const Stationary = require('../Models/Stationary');
 const jwt = require('jsonwebtoken');
 
