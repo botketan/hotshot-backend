@@ -17,7 +17,10 @@ const upload = multer({ storage: storage });
 //GET ALL DISHES
 router.get('/food/dish', async (req, res) => {
     try {
-        const dishes = await Dish.find();
+        var obj={};
+        if(req.query.category)obj.category=req.query.category;
+        if(req.query.price)obj.price={$lte:req.query.price };
+        const dishes = await Dish.find(obj);
         res.status(200).json(dishes);
     } catch (err) {
         res.status(400).json(err);
@@ -29,8 +32,10 @@ router.get('/food/dish/:dishId', async (req, res) => {
     try {
         const id = req.params.dishId;
         const dish = await Dish.findById(id);
+        
         res.status(200).json(dish);
     } catch (err) {
+        
         res.status(400).json(err);
     }
 })
@@ -39,8 +44,11 @@ router.get('/food/dish/:dishId', async (req, res) => {
 router.post('/food/dish', upload.single('pic'), verifyToken, authenticateOwner, async (req, res) => {
     try {
         const newDish = new Dish(req.body);
-        newDish.pic.data = req.file.buffer;
-        newDish.pic.contentType = req.file.mimetype;
+        if(req.file)
+        {
+            newDish.pic.data = req.file.buffer;
+            newDish.pic.contentType = req.file.mimetype;
+        }
         newDish.Rest_Id = req.restaurant;
         const savedDish = await newDish.save();
         const restaurant = await Owner.findById(req.restaurant);
